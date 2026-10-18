@@ -45,7 +45,7 @@ function re(src: string): RegExp | null {
   return compiled.get(src) ?? null;
 }
 
-export function ruleMatches(rule: Rule, t: Txn): boolean {
+function ruleMatches(rule: Rule, t: Txn): boolean {
   if (rule.sign === 'in' && t.amount <= 0) return false;
   if (rule.sign === 'out' && t.amount >= 0) return false;
   if (rule.account && !(re(rule.account)?.test(t.account))) return false;

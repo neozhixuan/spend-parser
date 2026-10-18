@@ -14,14 +14,14 @@ const eq = (a: number, b: number) => Math.abs(a - b) < 0.005;
 export const fmt = (n: number | null | undefined) => (n == null ? '—' : Number(n).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 const monthOf = (name: string) => MON[name.slice(0, 3).toUpperCase()];
 
-export function parseAmount(s: string): number {
+function parseAmount(s: string): number {
   const neg = /^\(.*\)$/.test(s) || s.trim().startsWith('-');
   const v = Number(s.replace(/[^\d.]/g, ''));
   return neg ? -v : v;
 }
 
 // Mask any token carrying 6+ digits (account numbers, refs, phone numbers) before it can reach the sheet.
-export function sanitise(s: string): string {
+function sanitise(s: string): string {
   return s
     .split(/\s+/)
     .map(tok => ((tok.match(/\d/g) || []).length >= 6 ? '•••' : tok))
@@ -40,18 +40,17 @@ function newTxn(t: Pick<Txn, 'date' | 'account' | 'description' | 'merchant' | '
 // ---------------------------------------------------------------------------
 interface Item { str: string; x: number; xEnd: number; y: number; h: number }
 
-export async function extractPages(pdf: PDFDocumentProxy): Promise<Page[]> {
+async function extractPages(pdf: PDFDocumentProxy): Promise<Page[]> {
   const pages: Page[] = [];
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p);
     const vp = page.getViewport({ scale: 1 });
     const tc = await page.getTextContent();
     const items: Item[] = [];
-    let rotated = 0;
     for (const it of tc.items) {
       if (!('str' in it) || typeof it.str !== 'string' || !it.str.trim()) continue;
       const [, b, c, d, e, f] = it.transform as number[];
-      if (Math.abs(b) > 0.01 || Math.abs(c) > 0.01) { rotated++; continue; } // vertical margin text (reg. numbers)
+      if (Math.abs(b) > 0.01 || Math.abs(c) > 0.01) continue; // vertical margin text (reg. numbers)
       const h = Math.abs(d) || it.height || 8;
       items.push({ str: it.str, x: e, xEnd: e + (it.width || 0), y: vp.height - f, h });
     }
@@ -82,7 +81,7 @@ export async function extractPages(pdf: PDFDocumentProxy): Promise<Page[]> {
       const kept = chunks.filter(c => c.str);
       return { page: p, y: Math.round(l.y * 10) / 10, chunks: kept, text: kept.map(c => c.str).join(' '), tag: '' };
     });
-    pages.push({ page: p, width: vp.width, height: vp.height, rotatedItems: rotated, lines });
+    pages.push({ page: p, lines });
   }
   return pages;
 }
@@ -90,10 +89,10 @@ export async function extractPages(pdf: PDFDocumentProxy): Promise<Page[]> {
 // ---------------------------------------------------------------------------
 // 2. Bank detection
 // ---------------------------------------------------------------------------
-export const BANK_LABELS: Record<BankId, string> = { paylah: 'DBS PayLah!', posb: 'POSB / DBS consolidated', sc: 'Standard Chartered', singlife: 'Singlife' };
+const BANK_LABELS: Record<BankId, string> = { paylah: 'DBS PayLah!', posb: 'POSB / DBS consolidated', sc: 'Standard Chartered', singlife: 'Singlife' };
 export const bankLabel = (bank: BankId | null | undefined) => (bank ? BANK_LABELS[bank] : undefined);
 
-export function detectBank(pages: Page[]): BankId | null {
+function detectBank(pages: Page[]): BankId | null {
   const head = pages.slice(0, 2).flatMap(p => p.lines.map(l => l.text)).join('\n');
   const first = (pages[0]?.lines || []).map(l => l.text).join('\n');
   const all = pages.flatMap(p => p.lines.map(l => l.text)).join('\n');
@@ -141,7 +140,6 @@ function headerOf(line: Line): Header | null {
 function splitLine(line: Line, hdr: Header, dateRe: RegExp | null) {
   const amts: Amounts = { w: null, d: null, b: null };
   const descParts: string[] = [];
-  const extras: string[] = [];
   let dateMatch: RegExpExecArray | null = null;
   for (const [i, c] of line.chunks.entries()) {
     let str = c.str;
@@ -152,12 +150,12 @@ function splitLine(line: Line, hdr: Header, dateRe: RegExp | null) {
     if (AMT_RE.test(str) && c.cx > hdr.amtZone) {
       let best = hdr.cols[0];
       for (const col of hdr.cols) if (Math.abs(col.cx - c.cx) < Math.abs(best.cx - c.cx)) best = col;
-      if (amts[best.key] == null) amts[best.key] = parseAmount(str); else extras.push(str);
+      if (amts[best.key] == null) amts[best.key] = parseAmount(str);
       continue;
     }
     descParts.push(str);
   }
-  return { dateMatch, desc: descParts.join(' ').trim(), amts, extras };
+  return { dateMatch, desc: descParts.join(' ').trim(), amts };
 }
 
 const lastAmount = (line: Line) => {
@@ -170,7 +168,7 @@ interface Row { date: string; desc: string[]; amts: Amounts; lines: Line[]; page
 function parseBalanceTable(pages: Page[], cfg: TableCfg, out: ParseResult) {
   const st = {
     section: null as string | null, hdr: null as Header | null, balance: null as number | null, cur: null as Row | null,
-    sumW: 0, sumD: 0, opened: false, sectionTxns: 0, verified: 0, closed: false,
+    sumW: 0, sumD: 0, sectionTxns: 0, verified: 0, closed: false,
     candidate: null as string | null, pending: null as string | null, stopped: false, page: 0,
   };
   const log = (level: IssueLevel, line: Line | null, msg: string) => out.issues.push({ level, page: line?.page, text: line?.text, msg });
@@ -181,7 +179,7 @@ function parseBalanceTable(pages: Page[], cfg: TableCfg, out: ParseResult) {
 
   const resetSection = (name: string) => {
     closeSection();
-    Object.assign(st, { section: name, balance: null, sumW: 0, sumD: 0, opened: false, sectionTxns: 0, verified: 0, closed: false });
+    Object.assign(st, { section: name, balance: null, sumW: 0, sumD: 0, sectionTxns: 0, verified: 0, closed: false });
   };
 
   function closeSection() {
@@ -201,7 +199,6 @@ function parseBalanceTable(pages: Page[], cfg: TableCfg, out: ParseResult) {
     if (st.balance != null && !eq(st.balance, val)) {
       log('error', line, `Balance brought forward ${fmt(val)} ≠ running balance ${fmt(st.balance)} from the previous page — a row was probably missed or misread just before this point.`);
     }
-    st.opened = true;
     st.balance = val;
   }
 

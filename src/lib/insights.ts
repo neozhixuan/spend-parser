@@ -3,12 +3,12 @@
 
 import type { Balance, Txn } from './types.ts';
 
-export type RecLevel = 'good' | 'warning' | 'critical' | 'info';
+type RecLevel = 'good' | 'warning' | 'critical' | 'info';
 export interface Rec { level: RecLevel; title: string; detail: string; weight: number }
-export interface CategoryStat { name: string; value: number; prev: number | null; share: number }
-export interface MerchantStat { name: string; total: number; count: number; category: string; amounts: number[] }
-export interface DayStat { name: string; value: number; count: number }
-export interface Kpis {
+interface CategoryStat { name: string; value: number; prev: number | null; share: number }
+interface MerchantStat { name: string; total: number; count: number; category: string; amounts: number[] }
+interface DayStat { name: string; value: number; count: number }
+interface Kpis {
   spend: number; prevSpend: number | null; income: number; net: number; savingsRate: number | null;
   perDay: number; count: number; elapsed: number; days: number; inProgress: boolean;
 }
@@ -23,9 +23,9 @@ export interface Insights {
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const daysIn = (ym: string) => { const [y, m] = ym.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).getUTCDate(); };
 export const prevMonth = (ym: string) => { const [y, m] = ym.split('-').map(Number); const d = new Date(Date.UTC(y, m - 2, 1)); return d.toISOString().slice(0, 7); };
-const money = (n: number) => 'S$' + Math.abs(n).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const money0 = (n: number) => 'S$' + Math.round(Math.abs(n)).toLocaleString('en-SG');
-const pct = (n: number) => `${Math.round(n * 100)}%`;
+export const money = (n: number) => 'S$' + Math.abs(n).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const money0 = (n: number) => 'S$' + Math.round(Math.abs(n)).toLocaleString('en-SG');
+export const pct = (n: number) => `${Math.round(n * 100)}%`;
 const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const RIDE_HAIL = /\bGRAB\b|GRAB\*|GOJEK|\bTADA\b|\bRYDE\b|\bZIG\b|COMFORT|CDG/i;
 const PUBLIC_TRANSIT = /TRANSIT|SIMPLYGO|BUS\/MRT|EZ-?LINK/i;

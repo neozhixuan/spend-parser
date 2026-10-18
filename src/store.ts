@@ -20,8 +20,8 @@ const local = {
 };
 
 export interface FileEntry { key: number; name: string; status: 'parsing' | 'done'; result: ParseResult | null }
-export interface LogItem { level: IssueLevel | 'ok'; file: string; msg: string; page?: number; text?: string }
-export interface SheetLogLine { time: string; msg: string; cls: string; link?: string }
+interface LogItem { level: IssueLevel | 'ok'; file: string; msg: string; page?: number; text?: string }
+interface SheetLogLine { time: string; msg: string; cls: string; link?: string }
 
 export const state = {
   files: [] as FileEntry[],
@@ -46,14 +46,13 @@ export const state = {
   showExport: false,             // forced open when sign-in needs a client ID
   showAdvanced: false,
 };
-export type State = typeof state;
 
 // ---------------------------------------------------------------- React binding
 let version = 0;
 const listeners = new Set<() => void>();
-export function emit() { version++; listeners.forEach(l => l()); }
+function emit() { version++; listeners.forEach(l => l()); }
 const subscribe = (l: () => void) => { listeners.add(l); return () => listeners.delete(l); };
-export function useStore(): State {
+export function useStore(): typeof state {
   useSyncExternalStore(subscribe, () => version);
   return state;
 }
