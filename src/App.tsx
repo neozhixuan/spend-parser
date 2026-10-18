@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useStore, unsavedCounts, type FileEntry } from './store.ts';
 import { Account } from './components/Account.tsx';
 import { AddStatements } from './components/AddStatements.tsx';
+import { GuideHero } from './components/GuideHero.tsx';
 import { ParseLog } from './components/ParseLog.tsx';
 import { InsightsCard } from './components/InsightsCard.tsx';
 import { ReviewTable } from './components/ReviewTable.tsx';
@@ -36,6 +37,7 @@ export function App() {
       </header>
 
       <main>
+        <GuideHero />
         <AddStatements onInspect={setInspecting} />
         {state.files.length > 0 && <ParseLog />}
         {hasTxns && <InsightsCard />}
