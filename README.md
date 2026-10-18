@@ -64,7 +64,7 @@ Your saved data lives in a spreadsheet called **Spending tracker** in your own G
 4. **Credentials → Create credentials → OAuth client ID → Web application**, with **Authorized JavaScript origins**:
    - `https://<your-project>.vercel.app` (your Vercel URL, no trailing slash)
    - `http://localhost:8000` (optional, for running locally)
-5. Put the Client ID in **`src/config.ts`** (`const CLIENT_ID: string = '…apps.googleusercontent.com';`), or set it as `VITE_GOOGLE_CLIENT_ID` in `.env.local` or your Vercel project's environment variables, then redeploy. The client ID isn't a secret: Google only accepts it from the origins you listed.
+5. Put the Client ID in **`src/config.ts`** (`export const GOOGLE_CLIENT_ID: string = '…apps.googleusercontent.com';`) and redeploy. The client ID isn't a secret: Google only accepts it from the origins you listed.
 
 ### What the page can access
 

@@ -2,13 +2,10 @@
 // Colours follow a validated categorical palette: slot 1 (blue) = this month, slot 2 (orange) = last month.
 
 import { createContext, useContext, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type PointerEvent, type ReactNode } from 'react';
-import type { Insights, Rec } from '../lib/insights.ts';
+import { money, money0, pct, type Insights, type Rec } from '../lib/insights.ts';
 
-const money = (n: number) => 'S$' + Math.abs(n).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const money0 = (n: number) => 'S$' + Math.round(Math.abs(n)).toLocaleString('en-SG');
 const compact = (n: number) => (Math.abs(n) >= 1000 ? `S$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K` : `S$${Math.round(n)}`);
-const pct = (n: number) => `${Math.round(n * 100)}%`;
-export const monthName = (ym: string) => new Date(ym + '-01T00:00:00Z').toLocaleString('en-SG', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const monthName = (ym: string) => new Date(ym + '-01T00:00:00Z').toLocaleString('en-SG', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function niceMax(v: number) {
   if (!(v > 0)) return 10;

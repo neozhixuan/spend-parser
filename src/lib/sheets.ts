@@ -21,7 +21,7 @@ declare global {
   interface Window { google?: { accounts?: { oauth2?: GoogleOAuth2 } } }
 }
 
-export interface Session { token: string; exp: number; email: string }
+interface Session { token: string; exp: number; email: string }
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) { super(message); this.status = status; }
@@ -30,7 +30,7 @@ export class ApiError extends Error {
 const SCOPES = 'openid email https://www.googleapis.com/auth/drive.file';
 const API = 'https://sheets.googleapis.com/v4/spreadsheets';
 const DRIVE = 'https://www.googleapis.com/drive/v3/files';
-export const TITLE = 'Spending tracker';
+const TITLE = 'Spending tracker';
 export const HEADER = ['ID', 'Date', 'Month', 'Account', 'Merchant', 'Description', 'Amount', 'Category', 'Kind'];
 const RULES_HEADER = ['Pattern', 'Field', 'Category', 'Kind'];
 const BAL_HEADER = ['Account', 'Closing balance', 'Updated'];
@@ -153,7 +153,7 @@ function toIsoDate(v: Cell | undefined): string | null {
   return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : null;
 }
 
-export interface TrackerData { transactions: Txn[]; skipped: number[]; rules: Rule[]; balances: Balance[] }
+interface TrackerData { transactions: Txn[]; skipped: number[]; rules: Rule[]; balances: Balance[] }
 
 export async function loadAll(id: string): Promise<TrackerData> {
   await ensureTabs(id);
@@ -185,11 +185,11 @@ export async function loadAll(id: string): Promise<TrackerData> {
 
 // ---------------------------------------------------------------- writing
 const safe = <T,>(v: T): T | string => (typeof v === 'string' && /^[=+\-@]/.test(v) ? `'${v}` : v); // block formula injection in text cells
-export function toSheetRow(t: Txn): Cell[] {
+function toSheetRow(t: Txn): Cell[] {
   return [t.id, `'${t.date}`, `'${t.date.slice(0, 7)}`, safe(t.account), safe(t.merchant), safe(t.description), t.amount, safe(t.category), t.kind];
 }
 
-export interface SavePayload { fresh: Txn[]; edited: Txn[]; rules: Rule[]; balances: Balance[] }
+interface SavePayload { fresh: Txn[]; edited: Txn[]; rules: Rule[]; balances: Balance[] }
 
 /**
  * Save everything in one go: append new transactions, update edited categories on saved rows,

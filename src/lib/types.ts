@@ -6,7 +6,7 @@ export type IssueLevel = 'error' | 'warn' | 'info';
 
 export interface Chunk { str: string; x: number; xEnd: number; h: number; cx: number }
 export interface Line { page: number; y: number; chunks: Chunk[]; text: string; tag: string }
-export interface Page { page: number; width: number; height: number; rotatedItems: number; lines: Line[] }
+export interface Page { page: number; lines: Line[] }
 
 export interface Issue { level: IssueLevel; msg: string; page?: number; text?: string }
 export interface Check { ok: boolean; label: string; detail: string; page?: number }
