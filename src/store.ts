@@ -385,7 +385,7 @@ export async function save() {
     const edited = state.txns.filter(t => t.saved && t.dirty);
     const balances = latestBalances();
     const r = await saveAll(state.sheetId, { fresh, edited, rules: state.rules, balances }, m => sheetLog(m));
-    for (const t of fresh) if (t.saved) { t.manual = true; state.history.push(t); }
+    for (const t of fresh) if (t.saved) state.history.push(t);
     state.historyBalances = balances;
     state.rulesDirty = false;
     sheetLog(`Done — ${r.added} added, ${r.updated} updated${r.skipped ? `, ${r.skipped} were already there` : ''}.`, '', sheetUrl(state.sheetId));

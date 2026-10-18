@@ -23,9 +23,9 @@ export interface Txn {
   kind: Kind;
   source?: { page: number; text: string };
   rule?: string | null;
-  manual?: boolean;      // category/kind set by you (or loaded from the tracker) — never re-categorised
+  manual?: boolean;      // category/kind set by you in this tab — never re-categorised
   matchedWith?: string | null;
-  saved?: boolean;       // already in the tracker spreadsheet
+  saved?: boolean;       // already in the tracker spreadsheet — never re-categorised
   dirty?: boolean;       // saved, then edited
   sheetRow?: number;
   file?: string;

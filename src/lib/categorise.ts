@@ -56,7 +56,7 @@ function ruleMatches(rule: Rule, t: Txn): boolean {
 export function categorise(txns: Txn[], userRules: Rule[] = [], defaults: Rule[] = DEFAULT_RULES): Txn[] {
   const rules = [...userRules, ...defaults];
   for (const t of txns) {
-    if (t.manual) continue;
+    if (t.manual || t.saved) continue;
     t.matchedWith = null;
     const hit = rules.find(r => ruleMatches(r, t));
     if (hit) { t.category = hit.category; t.kind = hit.kind; t.rule = hit.match; }
@@ -69,7 +69,7 @@ export function categorise(txns: Txn[], userRules: Rule[] = [], defaults: Rule[]
 // Applies when at least one side already looks like a transfer, or both are uncategorised.
 export function matchTransfers(txns: Txn[], maxDays = 3): number {
   const day = (d: string) => Date.parse(d + 'T00:00:00Z') / 86400000;
-  const eligible = (t: Txn) => !t.manual && !t.matchedWith && (t.kind === 'transfer' || t.category === 'Uncategorised' || t.category === 'Money received' || t.category === 'Sent to others');
+  const eligible = (t: Txn) => !t.manual && !t.saved && !t.matchedWith && (t.kind === 'transfer' || t.category === 'Uncategorised' || t.category === 'Money received' || t.category === 'Sent to others');
   const outs = txns.filter(t => t.amount < 0 && eligible(t));
   let pairs = 0;
   for (const o of outs) {
