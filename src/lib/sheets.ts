@@ -170,7 +170,7 @@ export async function loadAll(id: string): Promise<TrackerData> {
       id: String(txId), date: iso, account: String(account || ''), merchant: String(merchant || ''), description: String(description || ''),
       amount: Math.round(amt * 100) / 100, category: String(category || 'Uncategorised'),
       kind: KINDS.includes(kind as Kind) ? (kind as Kind) : amt < 0 ? 'expense' : 'income',
-      saved: true, manual: true, sheetRow: i + 2,
+      saved: true, sheetRow: i + 2,
     });
   });
   return {
@@ -214,8 +214,9 @@ export async function saveAll(id: string, { fresh, edited, rules, balances }: Sa
   const data: { range: string; values: Cell[][] }[] = edited.filter(t => t.sheetRow).map(t => ({ range: `Transactions!H${t.sheetRow}:I${t.sheetRow}`, values: [[safe(t.category), t.kind]] }));
   data.push({ range: 'Rules!A2:D', values: rules.map(r => [safe(r.match), r.field || '', safe(r.category), r.kind]) });
   data.push({ range: 'Balances!A2:C', values: balances.map(b => [safe(b.account), b.closing, b.updated || '']) });
-  await call('POST', `${API}/${id}/values:batchClear`, { ranges: ['Rules!A2:D', 'Balances!A2:C'] });
+  // Write first, then clear only the leftover tail: a failure in between can't leave the tabs empty.
   await call('POST', `${API}/${id}/values:batchUpdate`, { valueInputOption: 'RAW', data });
+  await call('POST', `${API}/${id}/values:batchClear`, { ranges: [`Rules!A${rules.length + 2}:D`, `Balances!A${balances.length + 2}:C`] });
   edited.forEach(t => { t.dirty = false; });
   if (edited.length) log(`Updated categories on ${edited.length} saved row(s).`);
   log(`Saved ${rules.length} rule(s) and ${balances.length} account balance(s).`);

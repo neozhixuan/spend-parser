@@ -64,5 +64,9 @@ const posbToSc = unique.filter(t => t.matchedWith && /STANDARD CHARTERED|FROM PO
 const topups = unique.filter(t => /TOP.?UP/i.test(t.description) && t.kind === 'transfer').length;
 console.log(`POSB→SC transfer legs matched: ${posbToSc} (expect ${c.posb_to_sc_transfers * 2}) · top-up legs marked transfer: ${topups} (expect ${c.paylah_topups * 2})`);
 if (posbToSc !== c.posb_to_sc_transfers * 2 || topups !== c.paylah_topups * 2) { failed++; console.log('❌ transfer handling differs'); }
+// Rows already in the tracker keep their category: rules never overwrite them.
+const kept = { ...unique.find(t => t.category !== 'Uncategorised'), saved: true, manual: false, category: 'Kept by tracker' };
+categorise([kept], [], DEFAULT_RULES);
+if (kept.category !== 'Kept by tracker') { failed++; console.log('❌ a saved row was re-categorised'); }
 console.log(failed ? `\n${failed} problem(s)` : '\nAll mock statements parsed exactly as expected.');
 process.exit(failed ? 1 : 0);
