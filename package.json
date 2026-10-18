@@ -1,0 +1,31 @@
+{
+  "name": "spend-parser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Parses SC, POSB/DBS and PayLah! e-statements in the browser, categorises them and saves to your own Google Sheet.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc",
+    "test": "node test/run_tests.mjs && node test/verify_mocks.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}

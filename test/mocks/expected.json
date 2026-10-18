@@ -1,0 +1,143 @@
+{
+  "files": {
+    "PayLah_2026-07.pdf": {
+      "bank": "paylah",
+      "transactions": 15,
+      "errors": 0,
+      "closing": {
+        "PayLah": 61.14
+      },
+      "net": -24.26
+    },
+    "POSB_Consolidated_2026-07.pdf": {
+      "bank": "posb",
+      "transactions": 14,
+      "errors": 0,
+      "closing": {
+        "POSB Everyday Savings": 17270.79,
+        "POSB SAYE": 4635.94,
+        "Supplementary Retirement Scheme": 1.0
+      },
+      "net": 3365.38
+    },
+    "SC_JumpStart_2026-07.pdf": {
+      "bank": "sc",
+      "transactions": 49,
+      "errors": 0,
+      "closing": {
+        "SC Jumpstart": 4051.57
+      },
+      "net": 239.17
+    },
+    "PayLah_2026-08.pdf": {
+      "bank": "paylah",
+      "transactions": 15,
+      "errors": 0,
+      "closing": {
+        "PayLah": 18.12
+      },
+      "net": -43.02
+    },
+    "POSB_Consolidated_2026-08.pdf": {
+      "bank": "posb",
+      "transactions": 15,
+      "errors": 0,
+      "closing": {
+        "POSB Everyday Savings": 20818.26,
+        "POSB SAYE": 4936.76,
+        "Supplementary Retirement Scheme": 1.0
+      },
+      "net": 4149.06
+    },
+    "SC_JumpStart_2026-08.pdf": {
+      "bank": "sc",
+      "transactions": 58,
+      "errors": 0,
+      "closing": {
+        "SC Jumpstart": 3762.12
+      },
+      "net": -289.45
+    },
+    "PayLah_2026-09.pdf": {
+      "bank": "paylah",
+      "transactions": 13,
+      "errors": 0,
+      "closing": {
+        "PayLah": 59.39
+      },
+      "net": 41.27
+    },
+    "POSB_Consolidated_2026-09.pdf": {
+      "bank": "posb",
+      "transactions": 19,
+      "errors": 0,
+      "closing": {
+        "POSB Everyday Savings": 24514.36,
+        "POSB SAYE": 5237.63,
+        "Supplementary Retirement Scheme": 1.0
+      },
+      "net": 4598.56
+    },
+    "SC_JumpStart_2026-09.pdf": {
+      "bank": "sc",
+      "transactions": 47,
+      "errors": 0,
+      "closing": {
+        "SC Jumpstart": 4009.38
+      },
+      "net": 247.26
+    },
+    "edge-cases/SC_2026-09_misprinted-balance.pdf": {
+      "bank": "sc",
+      "transactions": 47,
+      "errors": 2,
+      "why": "Row 7's printed balance is off by S$1.00: that row and the next both fail the running-balance check."
+    },
+    "edge-cases/PayLah_2026-09_missing-row.pdf": {
+      "bank": "paylah",
+      "transactions": 12,
+      "errors": 1,
+      "why": "One row is missing from the table, so previous balance + rows no longer equals the carried-forward balance."
+    },
+    "edge-cases/POSB_2026-09_password-MOCK1234.pdf": {
+      "bank": "posb",
+      "password": "MOCK1234",
+      "transactions": 19,
+      "errors": 0,
+      "why": "Password-protected. The page should ask for the password (MOCK1234) and then parse cleanly; a wrong password re-prompts."
+    },
+    "edge-cases/Scanned_photo_no-text-layer.pdf": {
+      "bank": null,
+      "transactions": 0,
+      "errors": 1,
+      "why": "Image-only PDF with no text layer; the log should say OCR isn't supported."
+    },
+    "edge-cases/Unknown_bank_statement.pdf": {
+      "bank": null,
+      "transactions": 0,
+      "errors": 1,
+      "why": "Not one of the supported banks; the log should show the first lines it read."
+    },
+    "edge-cases/Not_actually_a_PDF.pdf": {
+      "bank": null,
+      "transactions": 0,
+      "errors": 1,
+      "why": "Not a valid PDF; pdf.js should fail to open it and the log should say so."
+    }
+  },
+  "notes": [
+    "Load all 9 files in /mocks (not edge-cases) together: every file should be 'clean' with all balance checks green.",
+    "The SAYE section is quarter-to-date, so 6 SAYE rows repeat across files and should be reported as counted once.",
+    "PayLah statements run 23rd -> 22nd, so the July file also contains late-June rows.",
+    "SC card purchases post 0-2 days after purchase, so a few late-September purchases are not in any statement (realistic).",
+    "Internal transfers that should be excluded from spending: PayLah top-ups (POSB out / PayLah in), monthly S$1,500 POSB -> SC, SAYE S$300, DBS credit card bill payment.",
+    "Deliberately uncategorised merchants: ATM WITHDRAWAL, SHENG HUAT HARDWARE, ACME TECH salary is categorised as Salary."
+  ],
+  "combined": {
+    "rows_in_files": 245,
+    "duplicates": 6,
+    "unique": 239,
+    "paylah_topups": 2,
+    "posb_to_sc_transfers": 3
+  }
+}
