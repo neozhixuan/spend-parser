@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from 'react';
 import { bankLabel } from '../lib/parsers.ts';
+import { MockStatements } from './MockStatements.tsx';
 import { useStore, handleFiles, removeFile, fileStats, isSignedIn, clientId, doSignIn, type FileEntry } from '../store.ts';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
@@ -56,6 +57,7 @@ export function AddStatements({ onInspect }: { onInspect: (f: FileEntry) => void
         <strong>Drop PDF statements here</strong> or click to choose
         <span className="muted">Parsed inside this tab — PDFs are never uploaded. Anything already in your tracker is skipped automatically.</span>
       </label>
+      <MockStatements />
       <div className="files">{state.files.map(f => <FileRow key={f.key} f={f} onInspect={onInspect} />)}</div>
     </section>
   );
