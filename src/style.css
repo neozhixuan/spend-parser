@@ -185,3 +185,41 @@ details.advanced summary { cursor: pointer; color: var(--muted); }
 @media (max-width: 720px) { .account { justify-items: start; text-align: left; } .account-box { justify-content: flex-start; } }
 [hidden] { display: none !important; }
 a { color: var(--accent); }
+
+/* ---------------------------------------------------------------- landing guide */
+.hero {
+  padding: 28px 24px 24px; border: 1px solid var(--line); border-radius: 14px; min-width: 0;
+  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 13%, var(--card)) 0%, var(--card) 60%);
+}
+.hero-eyebrow { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.hero h2 { display: block; margin: 6px 0 8px; font-size: clamp(22px, 3vw, 30px); line-height: 1.15; letter-spacing: -0.02em; }
+.hero-sub { margin: 0 0 22px; max-width: 62ch; font-size: 15px; color: var(--muted); }
+.banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.bank { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--bank); border-radius: 12px; padding: 16px; min-width: 0; }
+.bank-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+.bank-head h3 { margin: 0; font-size: 15px; }
+.bank-app { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.guide-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.guide-step { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 8px 10px; align-items: start; }
+.guide-num { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--bank); color: #fff; font-size: 12px; font-weight: 700; }
+/* Two lines tall, so the screenshots line up across the three columns. */
+.guide-step p { margin: 2px 0 0; min-height: 2.9em; font-size: 13px; }
+.guide-step img { grid-column: 2; display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+@media (max-width: 860px) {
+  .banks { grid-template-columns: 1fr; }
+  .guide-step p { min-height: 0; }
+}
+
+/* ---------------------------------------------------------------- mock statements */
+.mocks { margin-top: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.mocks-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.mocks-head h3 { margin: 0 0 2px; }
+.mocks-head p { margin: 0; }
+.mock-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mock-card { display: grid; gap: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
+.mock-card:hover, .mock-card:focus-visible { border-color: var(--accent); transform: translateY(-1px); }
+/* Show the top of page 1: the bank header and the first rows. */
+.mock-thumb { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: top; border-radius: 4px; background: #fff; }
+.mock-name { display: grid; gap: 1px; min-width: 0; font-size: 13px; }
+.mock-name .small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 720px) { .mock-cards { grid-template-columns: 1fr; } }
